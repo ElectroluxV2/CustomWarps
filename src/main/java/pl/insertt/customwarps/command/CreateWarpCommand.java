@@ -15,18 +15,15 @@ import pl.insertt.customwarps.command.framework.CommandInfo;
 import pl.insertt.customwarps.util.FormatUtils;
 import pl.insertt.customwarps.util.PlayerUtils;
 import pl.insertt.customwarps.util.StringUtils;
-import pl.insertt.customwarps.warp.CustomWarpConstants;
 import pl.insertt.customwarps.warp.api.CustomWarp;
 
 public class CreateWarpCommand implements Command
 {
     private final CustomWarpsPlugin plugin;
-    private final CustomWarpConstants constants;
 
-    public CreateWarpCommand(CustomWarpsPlugin plugin, CustomWarpConstants constants)
+    public CreateWarpCommand(CustomWarpsPlugin plugin)
     {
         this.plugin = plugin;
-        this.constants = constants;
     }
 
     @CommandInfo(name = "createwarp", description = "Command to create warps.", usage = "/createwarp <name>", aliases = {"setwarp", "setcustomwarp", "createcustomwarp"}, permission = "customwarps.command.createwarp", minArgs = 1, maxArgs = 16, playerOnly = true)
@@ -49,6 +46,6 @@ public class CreateWarpCommand implements Command
                                 .append("Location: " + FormatUtils.formatLocation(warp.getLocation())).color(ChatColor.GRAY)
                                 .create()));
 
-        PlayerUtils.broadcast(constants.MESSAGE_TYPE, message);
+        PlayerUtils.broadcast(plugin.getWarpConfig().getMessageFormat(), message);
     }
 }

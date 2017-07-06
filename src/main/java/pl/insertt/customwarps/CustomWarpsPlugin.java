@@ -6,15 +6,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.diorite.config.ConfigManager;
 import org.diorite.config.serialization.Serialization;
-import pl.insertt.customwarps.command.CreateWarpCommand;
-import pl.insertt.customwarps.command.WarpCommand;
-import pl.insertt.customwarps.command.WarpInfoCommand;
-import pl.insertt.customwarps.command.WarpsCommand;
+import pl.insertt.customwarps.command.*;
 import pl.insertt.customwarps.command.framework.CommandRegistry;
 import pl.insertt.customwarps.data.WarpConfig;
 import pl.insertt.customwarps.data.WarpDatabase;
 import pl.insertt.customwarps.runnable.AutosaveThread;
-import pl.insertt.customwarps.warp.CustomWarpConstants;
 import pl.insertt.customwarps.warp.CustomWarpFactory;
 import pl.insertt.customwarps.warp.CustomWarpRegistry;
 import pl.insertt.customwarps.warp.CustomWarpService;
@@ -31,7 +27,6 @@ public class CustomWarpsPlugin extends JavaPlugin
     private WarpDatabase warpDatabase;
     private WarpConfig warpConfig;
     private CommandRegistry commandRegistry;
-    private CustomWarpConstants warpConstants;
 
     @Override
     public void onEnable()
@@ -53,12 +48,10 @@ public class CustomWarpsPlugin extends JavaPlugin
 
         warpRegistry.loadWarps(warpDatabase.getWarpList());
 
-        this.warpConstants = new CustomWarpConstants(this);
-
         registerCommands();
         registerEvents();
 
-        startRunnables();
+        startRunnable();
     }
 
     @Override
@@ -66,13 +59,13 @@ public class CustomWarpsPlugin extends JavaPlugin
     {
         warpDatabase.setWarpList(warpRegistry.getAllWarps());
         warpDatabase.save();
-        warpConfig.setMessageFormat(this.warpConstants.MESSAGE_TYPE);
+        warpConfig.setMessageFormat(this.warpConfig.getMessageFormat());
         warpConfig.save();
     }
 
     private void registerCommands()
     {
-        commandRegistry.register(new CreateWarpCommand(this, this.warpConstants), new WarpsCommand(this), new WarpCommand(this, this.warpConstants), new WarpInfoCommand(this));
+        commandRegistry.register(new CreateWarpCommand(this), new WarpsCommand(this), new WarpCommand(this), new WarpInfoCommand(this), new WarpAdminCommand(this));
     }
 
     private void registerEvents(Listener... listeners)
@@ -85,11 +78,11 @@ public class CustomWarpsPlugin extends JavaPlugin
         }
     }
 
-    private void startRunnables()
+    private void startRunnable()
     {
-        if(this.warpConstants.AUTOSAVE)
+        if(this.warpConfig.getAutosave())
         {
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new AutosaveThread(this), this.warpConstants.AUTOSAVE_INTERVAL * 20L, this.warpConstants.AUTOSAVE_INTERVAL * 20L);
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new AutosaveThread(this), this.warpConfig.getAutosaveInterval() * 20L, this.warpConfig.getAutosaveInterval() * 20L);
         }
     }
 
@@ -112,4 +105,5 @@ public class CustomWarpsPlugin extends JavaPlugin
     {
         return warpConfig;
     }
+
 }

@@ -17,13 +17,13 @@ public interface WarpConfig extends Config
         return ChatMessageType.CHAT;
     }
 
-    @Comment("Defines whether warp autosave should be enabled.")
+    @Comment("Defines whether warp autosave should be enabled. \nTakes effect after restart.")
     default boolean getAutosave()
     {
         return true;
     }
 
-    @Comment("Defines interval between warp autosave, default: 600 \nIf autosave isn't enabled, this value have no matter.")
+    @Comment("Defines interval between warp autosave, default: 600 \nIf autosave isn't enabled, this value have no matter. \nTakes effect after restart.")
     default int getAutosaveInterval()
     {
         return 600;

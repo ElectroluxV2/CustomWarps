@@ -1,5 +1,6 @@
 package pl.insertt.customwarps.command.framework;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -82,7 +83,7 @@ public class CommandRegistry
                             }
                             catch(ArgumentParseException ex)
                             {
-                                sender.sendMessage(ex.getMessage());
+                                sender.sendMessage(ChatColor.RED + ex.getMessage());
                             }
 
                             return true;

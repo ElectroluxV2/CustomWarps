@@ -11,18 +11,15 @@ import pl.insertt.customwarps.command.framework.ArgumentParseException;
 import pl.insertt.customwarps.command.framework.Arguments;
 import pl.insertt.customwarps.command.framework.Command;
 import pl.insertt.customwarps.command.framework.CommandInfo;
-import pl.insertt.customwarps.warp.CustomWarpConstants;
 import pl.insertt.customwarps.warp.api.CustomWarp;
 
 public class WarpCommand implements Command
 {
     private final CustomWarpsPlugin plugin;
-    private final CustomWarpConstants constants;
 
-    public WarpCommand(CustomWarpsPlugin plugin, CustomWarpConstants constants)
+    public WarpCommand(CustomWarpsPlugin plugin)
     {
         this.plugin = plugin;
-        this.constants = constants;
     }
 
     @CommandInfo(name = "warp", description = "Teleport onto warp", usage = "/warp <name>", aliases = {"tpwarp", "cwarp"}, permission = "customwarps.command.warp", minArgs = 1, maxArgs = 16, playerOnly = true)
@@ -62,13 +59,13 @@ public class WarpCommand implements Command
 
                 player.teleport(warp.getLocation());
 
-                player.spigot().sendMessage(constants.MESSAGE_TYPE, new TextComponent(ChatColor.GREEN + "Teleported onto warp: " + warp.getName()));
+                player.spigot().sendMessage(plugin.getWarpConfig().getMessageFormat(), new TextComponent(ChatColor.GREEN + "Teleported onto warp: " + warp.getName()));
             }, 3 * 20L);
             return;
         }
 
         player.teleport(warp.getLocation());
 
-        player.spigot().sendMessage(constants.MESSAGE_TYPE, new TextComponent(ChatColor.GREEN + "Teleported onto warp: " + warp.getName()));
+        player.spigot().sendMessage(plugin.getWarpConfig().getMessageFormat(), new TextComponent(ChatColor.GREEN + "Teleported onto warp: " + warp.getName()));
     }
 }
