@@ -1,0 +1,8 @@
+name: CustomWarps
+author: insertt
+website: https://insertt.pl
+version: 1.0-SNASPHOT
+main: pl.insertt.customwarps.CustomWarpsPlugin
+
+command:
+  createwarp:
