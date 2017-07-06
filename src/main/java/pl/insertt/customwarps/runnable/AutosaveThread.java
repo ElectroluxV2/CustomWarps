@@ -22,6 +22,7 @@ public class AutosaveThread implements Runnable
         {
             plugin.getWarpDatabase().setWarpList(plugin.getWarpRegistry().getAllWarps());
             plugin.getWarpDatabase().save();
+            plugin.getWarpConfig().save();
         }
         catch(Exception ex)
         {
