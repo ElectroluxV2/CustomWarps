@@ -11,22 +11,34 @@ import org.diorite.config.annotations.Header;
 
 public interface WarpConfig extends Config
 {
-    @Comment("Defines where messages will appear. Available modes: CHAT, ACTION_BAR \nNot every message will be appeared on action bar if selected.")
+    @Comment({"Defines where messages will appear. Available modes: CHAT, ACTION_BAR", "Not every message will be appeared on action bar if selected."})
     default ChatMessageType getMessageFormat()
     {
         return ChatMessageType.CHAT;
     }
 
-    @Comment("Defines whether warp autosave should be enabled. \nTakes effect after restart.")
+    @Comment({"Defines whether warp autosave should be enabled", "Takes effect after restart."})
     default boolean getAutosave()
     {
         return true;
     }
 
-    @Comment("Defines interval between warp autosave, default: 600 \nIf autosave isn't enabled, this value have no matter. \nTakes effect after restart.")
+    @Comment({"Defines interval between warp autosave, default: 600", "If autosave isn't enabled, this value have no matter", "Takes effect after restart."})
     default int getAutosaveInterval()
     {
         return 600;
+    }
+
+    @Comment({"Defines where server warps should appear.", "Available modes: chat, gui"})
+    default String getWarpListType()
+    {
+        return "chat";
+    }
+
+    @Comment({"Defines how much warps player can have.", "Warps per permission will be added in future."})
+    default int getMaxWarpsPerPlayer()
+    {
+        return 1;
     }
 
     void setMessageFormat(ChatMessageType type);
@@ -35,4 +47,7 @@ public interface WarpConfig extends Config
 
     void setAutosaveInterval(int interval);
 
+    void setWarpListType(String warpListType);
+
+    void setMaxWarpsPerPlayer(int maxWarpsPerPlayer);
 }

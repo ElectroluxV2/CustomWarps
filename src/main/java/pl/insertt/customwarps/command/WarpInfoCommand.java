@@ -6,14 +6,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pl.insertt.customwarps.CustomWarpsPlugin;
-import pl.insertt.customwarps.command.framework.ArgumentParseException;
-import pl.insertt.customwarps.command.framework.Arguments;
-import pl.insertt.customwarps.command.framework.Command;
-import pl.insertt.customwarps.command.framework.CommandInfo;
+import pl.insertt.customwarps.command.framework.*;
 import pl.insertt.customwarps.util.FormatUtils;
 import pl.insertt.customwarps.util.PlayerUtils;
 import pl.insertt.customwarps.util.StringUtils;
-import pl.insertt.customwarps.warp.api.CustomWarp;
+import pl.insertt.customwarps.system.warp.api.CustomWarp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +26,11 @@ public class WarpInfoCommand implements Command
     }
 
     @CommandInfo(name = "warpinfo", description = "Warp info command.", usage = "/warpinfo <name>", aliases = {"winfo", "checkwarp"}, permission = "customwarps.command.warpinfo", minArgs = 1, maxArgs = 1)
-    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException
+    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
     {
         Player player = (Player) sender;
         String name = StringUtils.buildName(args.getFrom(1, 16));
-        CustomWarp warp = plugin.getWarpRegistry().getWarp(name);
+        CustomWarp warp = plugin.getRegistry().getWarp(name);
         List<String> applicablePlayers = new ArrayList<>();
 
         for(UUID uuid : warp.getApplicablePlayers())

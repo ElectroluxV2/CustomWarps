@@ -1,7 +1,7 @@
-package pl.insertt.customwarps.warp;
+package pl.insertt.customwarps.system.warp;
 
 import pl.insertt.customwarps.CustomWarpsPlugin;
-import pl.insertt.customwarps.warp.api.CustomWarp;
+import pl.insertt.customwarps.system.warp.api.CustomWarp;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -26,6 +26,16 @@ public class CustomWarpRegistry
 
         warps.add(warp);
         return true;
+    }
+
+    public boolean unregister(CustomWarp warp)
+    {
+        if(exists(warp.getName()))
+        {
+            warps.remove(warp);
+            return true;
+        }
+        return false;
     }
 
     public boolean exists(String name)

@@ -1,4 +1,4 @@
-package pl.insertt.customwarps.warp;
+package pl.insertt.customwarps.system.warp;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Bukkit;
@@ -13,7 +13,8 @@ import org.diorite.config.annotations.SerializableAs;
 import org.diorite.config.serialization.DeserializationData;
 import org.diorite.config.serialization.SerializationData;
 import pl.insertt.customwarps.util.FormatUtils;
-import pl.insertt.customwarps.warp.api.CustomWarp;
+import pl.insertt.customwarps.system.warp.api.CustomWarp;
+import pl.insertt.customwarps.util.RandomUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -44,6 +45,8 @@ public class CustomWarpService implements CustomWarp
 
     private Date modificationDate;
 
+    private Material icon = RandomUtils.getRandomMaterial(CustomWarpConstants.RANDOM_WARP_ICONS);
+
     /**
      * @param owner
      *        of the warp.
@@ -52,7 +55,7 @@ public class CustomWarpService implements CustomWarp
      * @param location
      *        of the warp.
      */
-    CustomWarpService(final UUID owner, final String name, final Location location)
+    CustomWarpService(final UUID owner, final String name, final Location location, final Material icon)
     {
         this.warpOwner = owner;
         this.warpName = name;
@@ -67,6 +70,8 @@ public class CustomWarpService implements CustomWarp
         this.pitch = location.getPitch();
 
         applicablePlayers = new HashSet<>();
+
+        this.icon = icon;
     }
 
     protected CustomWarpService(DeserializationData data)
@@ -87,6 +92,8 @@ public class CustomWarpService implements CustomWarp
 
         this.modified = data.getOrThrow("modified", boolean.class);
         this.modificationDate = Date.from(FormatUtils.fromLong(data.getOrThrow("modificationDate", Long.class)));
+
+        this.icon = data.getOrThrow("icon", Material.class);
 
         if(this.applicablePlayers == null)
         {
@@ -118,6 +125,8 @@ public class CustomWarpService implements CustomWarp
         data.add("modified", this.modified);
 
         data.add("modificationDate", this.modificationDate == null ? 0 : this.modificationDate.getTime());
+
+        data.add("icon", this.icon, Material.class);
     }
 
     @Override
@@ -149,6 +158,7 @@ public class CustomWarpService implements CustomWarp
         this.yaw = location.getYaw();
         this.pitch = location.getPitch();
         modified = true;
+        modificationDate = new Date(System.currentTimeMillis());
     }
 
     @Override
@@ -262,6 +272,20 @@ public class CustomWarpService implements CustomWarp
     public Date getModificationDate()
     {
         return modificationDate;
+    }
+
+    @Override
+    public Material getIcon()
+    {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(Material material)
+    {
+        this.icon = icon;
+        modified = true;
+        modificationDate = new Date(System.currentTimeMillis());
     }
 
     @Override

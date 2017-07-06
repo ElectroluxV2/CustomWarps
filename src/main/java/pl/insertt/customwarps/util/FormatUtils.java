@@ -2,8 +2,6 @@ package pl.insertt.customwarps.util;
 
 import org.bukkit.Location;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -22,7 +20,7 @@ public class FormatUtils
     {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(location.getWorld().getName()).append(", ").append(round(location.getX(), 2)).append(", ").append(round(location.getY(), 2)).append(", ").append(round(location.getZ(), 2));
+        buf.append(location.getWorld().getName()).append(", ").append(MathUtil.roundToPlaces(location.getX(), 2)).append(", ").append(MathUtil.roundToPlaces(location.getY(), 2)).append(", ").append(MathUtil.roundToPlaces(location.getZ(), 2));
 
         return buf.toString();
     }
@@ -54,15 +52,4 @@ public class FormatUtils
 
         return calendar.toInstant();
     }
-
-    public static double round(double value, int places)
-    {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-
-        return bd.doubleValue();
-    }
-
 }

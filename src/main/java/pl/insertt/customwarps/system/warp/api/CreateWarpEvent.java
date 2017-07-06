@@ -1,4 +1,4 @@
-package pl.insertt.customwarps.warp.api;
+package pl.insertt.customwarps.system.warp.api;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

@@ -3,7 +3,7 @@ package pl.insertt.customwarps.data;
 import org.diorite.config.Config;
 import org.diorite.config.annotations.Footer;
 import org.diorite.config.annotations.Header;
-import pl.insertt.customwarps.warp.api.CustomWarp;
+import pl.insertt.customwarps.system.warp.api.CustomWarp;
 
 import java.util.Set;
 

@@ -8,12 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pl.insertt.customwarps.CustomWarpsPlugin;
-import pl.insertt.customwarps.command.framework.ArgumentParseException;
-import pl.insertt.customwarps.command.framework.Arguments;
-import pl.insertt.customwarps.command.framework.Command;
-import pl.insertt.customwarps.command.framework.CommandInfo;
+import pl.insertt.customwarps.command.framework.*;
+import pl.insertt.customwarps.system.warp.api.CustomWarp;
 import pl.insertt.customwarps.util.FormatUtils;
-import pl.insertt.customwarps.warp.api.CustomWarp;
 
 public class WarpsCommand implements Command
 {
@@ -25,13 +22,23 @@ public class WarpsCommand implements Command
     }
 
     @CommandInfo(name = "warps", description = "Warp list command.", usage = "/warps", aliases = {"warplist", "warpslist"}, permission = "customwarps.command.warps", minArgs = 0, maxArgs = 0, playerOnly = true)
-    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException
+    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
     {
         Player player = (Player) sender;
+        //String type = plugin.getConfiguration().getWarpListType();
+        //int menus = (int) Math.ceil(plugin.getRegistry().getWarpCount() / 53);
 
-        TextComponent start = new TextComponent(ChatColor.GOLD + "Warps: ");
+        /*if(type.equalsIgnoreCase("gui")) //TODO: Warps in GUI.
+        {
+            GuiWindow window = new GuiWindow(ChatColor.RED + "Warps", 6);
+            window.setCloseEvent(event -> window.unregister());
 
-        for(CustomWarp warp : plugin.getWarpRegistry().getAllWarps())
+        }
+        else
+        {*/
+        TextComponent start = new TextComponent(plugin.getMessages().getMainColor() + plugin.getMessages().getAvailableWarps());
+
+        for(CustomWarp warp : plugin.getRegistry().getAllWarps())
         {
             TextComponent comp = new TextComponent(ChatColor.GRAY + warp.getName() + ", ");
             comp.setHoverEvent(
@@ -44,4 +51,5 @@ public class WarpsCommand implements Command
         }
         player.spigot().sendMessage(start);
     }
+
 }

@@ -1,6 +1,7 @@
 package pl.insertt.customwarps.command.framework;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -37,7 +38,6 @@ public class CommandRegistry
         }
     }
 
-    //TODO: Message system (captions)
     public void register(Command... commands)
     {
         for (Command command : commands)
@@ -58,22 +58,35 @@ public class CommandRegistry
 
                             if (!sender.hasPermission(info.permission()))
                             {
-                                //sender.sendMessage("permissions");
-                                return true;
+                                if(sender instanceof Player)
+                                {
+                                    ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getErrorColor() + plugin.getMessages().getNoPermission()));
+                                }
+                                else
+                                {
+                                    sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getNoPermission() + ChatColor.GRAY + "(" + info.permission() + ")");
+                                }
                             }
 
                             if (info.playerOnly())
                             {
                                 if (!(sender instanceof Player))
                                 {
-                                    //Bukkit.getLogger().log(Level.INFO, Caption.PREFIX.text() + Caption.NOT_PLAYER.text());
+                                    sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getPlayerOnly());
                                     return true;
                                 }
                             }
 
                             if ((args.getSize() < info.minArgs()) || (args.getSize() > info.maxArgs()))
                             {
-                                //sender.sendMessage("usage");
+                                if(sender instanceof Player)
+                                {
+                                    ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getErrorColor() + plugin.getMessages().getUsage() + info.usage()));
+                                }
+                                else
+                                {
+                                    sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getUsage() + info.usage());
+                                }
                                 return true;
                             }
 
@@ -81,11 +94,31 @@ public class CommandRegistry
                             {
                                 command.execute(sender, args);
                             }
-                            catch(ArgumentParseException ex)
+                            catch(ArgumentParseException | SomethingWentWrong | Exception ex)
                             {
-                                sender.sendMessage(ChatColor.RED + ex.getMessage());
-                            }
+                                if(ex instanceof Exception)
+                                {
+                                    if(sender instanceof Player)
+                                    {
+                                        ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getErrorColor() + plugin.getMessages().getUnknownError()));
+                                        ex.printStackTrace();
+                                    }
+                                    else
+                                    {
+                                        sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getUnknownError());
+                                        ex.printStackTrace();
+                                    }
+                                }
 
+                                if(sender instanceof Player)
+                                {
+                                    ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getErrorColor() + plugin.getMessages().getSomethingWrong() + ex.getMessage()));
+                                }
+                                else
+                                {
+                                    sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getSomethingWrong() + ex.getMessage());
+                                }
+                            }
                             return true;
                         }
                     };

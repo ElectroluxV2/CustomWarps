@@ -1,6 +1,7 @@
-package pl.insertt.customwarps.warp.api;
+package pl.insertt.customwarps.system.warp.api;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.diorite.config.serialization.Serializable;
 
 import java.util.Date;
@@ -118,5 +119,17 @@ public interface CustomWarp extends Serializable
      *
      * @return date when applicable players can teleport onto warp.
      */
+
+    /**
+     * Returns icon of warp in gui.
+     *
+     * @return icon of warp in gui.
+     */
+    Material getIcon();
+
+    /**
+     * Sets icon of warp in gui.
+     */
+    void setIcon(Material material);
 
 }

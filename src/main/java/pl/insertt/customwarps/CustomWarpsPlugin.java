@@ -10,10 +10,12 @@ import pl.insertt.customwarps.command.*;
 import pl.insertt.customwarps.command.framework.CommandRegistry;
 import pl.insertt.customwarps.data.WarpConfig;
 import pl.insertt.customwarps.data.WarpDatabase;
-import pl.insertt.customwarps.runnable.AutosaveThread;
-import pl.insertt.customwarps.warp.CustomWarpFactory;
-import pl.insertt.customwarps.warp.CustomWarpRegistry;
-import pl.insertt.customwarps.warp.CustomWarpService;
+import pl.insertt.customwarps.data.WarpMessages;
+import pl.insertt.customwarps.system.gui.GuiListener;
+import pl.insertt.customwarps.system.warp.CustomWarpFactory;
+import pl.insertt.customwarps.system.warp.CustomWarpRegistry;
+import pl.insertt.customwarps.system.warp.CustomWarpService;
+import pl.insertt.customwarps.task.AutosaveTask;
 
 import java.io.File;
 
@@ -21,11 +23,13 @@ public class CustomWarpsPlugin extends JavaPlugin
 {
     private final File warpDatabaseFile = new File(getDataFolder(), "database.yml");
     private final File warpConfigFile = new File(getDataFolder(), "config.yml");
+    private final File warpMessagesFile = new File(getDataFolder(), "messages.yml");
 
     private CustomWarpRegistry warpRegistry;
     private CustomWarpFactory warpFactory;
     private WarpDatabase warpDatabase;
     private WarpConfig warpConfig;
+    private WarpMessages warpMessages;
     private CommandRegistry commandRegistry;
 
     @Override
@@ -39,19 +43,24 @@ public class CustomWarpsPlugin extends JavaPlugin
         instance.registerSerializable(CustomWarpService.class);
         this.warpConfig = ConfigManager.createInstance(WarpConfig.class);
         this.warpConfig.bindFile(warpConfigFile);
+
+        this.warpMessages = ConfigManager.createInstance(WarpMessages.class);
+        this.warpMessages.bindFile(warpMessagesFile);
         this.commandRegistry = new CommandRegistry(this);
 
-        warpDatabase.load();
-        warpConfig.load();
+        this.warpDatabase.load();
+        this.warpConfig.load();
+        this.warpMessages.load();
 
-        warpConfig.save();
+        this.warpConfig.save();
+        this.warpMessages.save();
 
-        warpRegistry.loadWarps(warpDatabase.getWarpList());
+        this.warpRegistry.loadWarps(warpDatabase.getWarpList());
 
         registerCommands();
-        registerEvents();
+        registerListeners(new GuiListener());
 
-        startRunnable();
+        startTask();
     }
 
     @Override
@@ -65,10 +74,10 @@ public class CustomWarpsPlugin extends JavaPlugin
 
     private void registerCommands()
     {
-        commandRegistry.register(new CreateWarpCommand(this), new WarpsCommand(this), new WarpCommand(this), new WarpInfoCommand(this), new WarpAdminCommand(this));
+        commandRegistry.register(new CreateWarpCommand(this), new WarpsCommand(this), new WarpCommand(this), new WarpInfoCommand(this), new WarpAdminCommand(this), new ManageWarpCommand(this), new DeleteWarpCommand(this));
     }
 
-    private void registerEvents(Listener... listeners)
+    private void registerListeners(Listener... listeners)
     {
         final PluginManager pm = Bukkit.getPluginManager();
 
@@ -78,32 +87,37 @@ public class CustomWarpsPlugin extends JavaPlugin
         }
     }
 
-    private void startRunnable()
+    private void startTask()
     {
         if(this.warpConfig.getAutosave())
         {
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new AutosaveThread(this), this.warpConfig.getAutosaveInterval() * 20L, this.warpConfig.getAutosaveInterval() * 20L);
+            new AutosaveTask(this).runTaskTimer(this, this.warpConfig.getAutosaveInterval() * 20L, this.warpConfig.getAutosaveInterval() * 20L);
         }
     }
 
-    public CustomWarpFactory getWarpFactory()
+    public CustomWarpFactory getFactory()
     {
         return warpFactory;
     }
 
-    public CustomWarpRegistry getWarpRegistry()
+    public CustomWarpRegistry getRegistry()
     {
         return warpRegistry;
     }
 
-    public WarpDatabase getWarpDatabase()
+    public WarpDatabase getDatabase()
     {
         return warpDatabase;
     }
 
-    public WarpConfig getWarpConfig()
+    public WarpConfig getConfiguration()
     {
         return warpConfig;
+    }
+
+    public WarpMessages getMessages()
+    {
+        return warpMessages;
     }
 
 }
