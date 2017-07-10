@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.diorite.config.serialization.Serializable;
 
+import javax.annotation.Nonnull;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public interface CustomWarp extends Serializable
      *
      * @return UUID of warp's owner.
      */
+    @Nonnull
     UUID getOwner();
 
     /**
@@ -25,6 +27,7 @@ public interface CustomWarp extends Serializable
      *
      * @return name of warp.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -32,6 +35,7 @@ public interface CustomWarp extends Serializable
      *
      * @return location of warp.
      */
+    @Nonnull
     Location getLocation();
 
     /**
@@ -96,6 +100,7 @@ public interface CustomWarp extends Serializable
      *
      * @return set of applicable players to teleport onto warp.
      */
+    @Nonnull
     Set<UUID> getApplicablePlayers();
 
     /**
@@ -103,6 +108,7 @@ public interface CustomWarp extends Serializable
      *
      * @return date when warp has been created.
      */
+    @Nonnull
     Date getCreationDate();
 
     /**
@@ -112,6 +118,7 @@ public interface CustomWarp extends Serializable
      * @return date when warp has been modified.
      *         Can return null if warp has not been modified before.
      */
+    @Nonnull
     Date getModificationDate();
 
     /**
@@ -125,6 +132,7 @@ public interface CustomWarp extends Serializable
      *
      * @return icon of warp in gui.
      */
+    @Nonnull
     Material getIcon();
 
     /**

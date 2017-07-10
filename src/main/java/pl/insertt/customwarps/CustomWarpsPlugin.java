@@ -7,14 +7,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.diorite.config.ConfigManager;
 import org.diorite.config.serialization.Serialization;
 import pl.insertt.customwarps.command.*;
-import pl.insertt.customwarps.command.framework.CommandRegistry;
+import pl.insertt.customwarps.system.command.CommandRegistry;
 import pl.insertt.customwarps.data.WarpConfig;
 import pl.insertt.customwarps.data.WarpDatabase;
 import pl.insertt.customwarps.data.WarpMessages;
 import pl.insertt.customwarps.system.gui.GuiListener;
+import pl.insertt.customwarps.system.command.api.WarpConsole;
+import pl.insertt.customwarps.system.command.WarpConsoleImpl;
+import pl.insertt.customwarps.system.command.WarpPlayerCreator;
+import pl.insertt.customwarps.system.gui.PredefinedGui;
 import pl.insertt.customwarps.system.warp.CustomWarpFactory;
 import pl.insertt.customwarps.system.warp.CustomWarpRegistry;
-import pl.insertt.customwarps.system.warp.CustomWarpService;
+import pl.insertt.customwarps.system.warp.CustomWarpImpl;
 import pl.insertt.customwarps.task.AutosaveTask;
 
 import java.io.File;
@@ -31,6 +35,8 @@ public class CustomWarpsPlugin extends JavaPlugin
     private WarpConfig warpConfig;
     private WarpMessages warpMessages;
     private CommandRegistry commandRegistry;
+    private WarpConsole warpConsole;
+    private PredefinedGui guiList;
 
     @Override
     public void onEnable()
@@ -40,15 +46,24 @@ public class CustomWarpsPlugin extends JavaPlugin
         this.warpDatabase = ConfigManager.createInstance(WarpDatabase.class);
         this.warpDatabase.bindFile(warpDatabaseFile);
         Serialization instance = Serialization.getInstance();
-        instance.registerSerializable(CustomWarpService.class);
+        instance.registerSerializable(CustomWarpImpl.class);
         this.warpConfig = ConfigManager.createInstance(WarpConfig.class);
         this.warpConfig.bindFile(warpConfigFile);
 
         this.warpMessages = ConfigManager.createInstance(WarpMessages.class);
         this.warpMessages.bindFile(warpMessagesFile);
         this.commandRegistry = new CommandRegistry(this);
+        this.warpConsole = new WarpConsoleImpl();
 
-        this.warpDatabase.load();
+        try
+        {
+            this.warpDatabase.load();
+        }
+        catch(Exception ex)
+        {
+            this.warpDatabase.metadata().put("crash-status", true);
+        }
+
         this.warpConfig.load();
         this.warpMessages.load();
 
@@ -57,8 +72,10 @@ public class CustomWarpsPlugin extends JavaPlugin
 
         this.warpRegistry.loadWarps(warpDatabase.getWarpList());
 
+        this.guiList = new PredefinedGui(this);
+
         registerCommands();
-        registerListeners(new GuiListener());
+        registerListeners(new GuiListener(), new WarpPlayerCreator(this));
 
         startTask();
     }
@@ -66,22 +83,25 @@ public class CustomWarpsPlugin extends JavaPlugin
     @Override
     public void onDisable()
     {
-        warpDatabase.setWarpList(warpRegistry.getAllWarps());
-        warpDatabase.save();
+        if(warpDatabase.metadata().get("crash-status") == null)
+        {
+            warpDatabase.setWarpList(warpRegistry.getAllWarps());
+            warpDatabase.save();
+        }
         warpConfig.setMessageFormat(this.warpConfig.getMessageFormat());
         warpConfig.save();
     }
 
     private void registerCommands()
     {
-        commandRegistry.register(new CreateWarpCommand(this), new WarpsCommand(this), new WarpCommand(this), new WarpInfoCommand(this), new WarpAdminCommand(this), new ManageWarpCommand(this), new DeleteWarpCommand(this));
+        commandRegistry.register(new CreateWarpCommand(this), new WarpsCommand(this), new WarpCommand(this), new WarpInfoCommand(this), new WarpAdminCommand(this), new ManageWarpCommand(this, guiList), new DeleteWarpCommand(this));
     }
 
     private void registerListeners(Listener... listeners)
     {
         final PluginManager pm = Bukkit.getPluginManager();
 
-        for(Listener listener : listeners)
+        for (Listener listener : listeners)
         {
             pm.registerEvents(listener, this);
         }
@@ -89,7 +109,7 @@ public class CustomWarpsPlugin extends JavaPlugin
 
     private void startTask()
     {
-        if(this.warpConfig.getAutosave())
+        if (this.warpConfig.getAutosave())
         {
             new AutosaveTask(this).runTaskTimer(this, this.warpConfig.getAutosaveInterval() * 20L, this.warpConfig.getAutosaveInterval() * 20L);
         }
@@ -120,4 +140,13 @@ public class CustomWarpsPlugin extends JavaPlugin
         return warpMessages;
     }
 
+    public WarpConsole getConsole()
+    {
+        return warpConsole;
+    }
+
+    public PredefinedGui getGuiList()
+    {
+        return guiList;
+    }
 }

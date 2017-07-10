@@ -1,4 +1,4 @@
-package pl.insertt.customwarps.command.framework;
+package pl.insertt.customwarps.system.command.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

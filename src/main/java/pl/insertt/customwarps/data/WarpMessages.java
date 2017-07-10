@@ -72,16 +72,34 @@ public interface WarpMessages extends Config
         return "Available warps: ";
     }
 
+    @Comment("Message displayed when database doesn't contain any warps while executing /warps command.")
+    default String getNoAvailableWarps()
+    {
+        return "No available warps.";
+    }
+
     @Comment("Message displayed when warp is not safe.")
     default String getUnsafeWarp()
     {
         return "Teleport to this warp isn't safe, do you want to teleport? \nWe will teleport you in 3 seconds, if u want to abort, move.";
     }
 
+    @Comment("Message displayed when someone tried to create existing warp with same name.")
+    default String getWarpAlreadyExists()
+    {
+        return "Warp with this name already exists!";
+    }
+
     @Comment("Message displayed when someone tried to delete non-existing warp or want to teleport onto non-existing warp.")
     default String getWarpDoesntExists()
     {
         return "This warp doesn't exists.";
+    }
+
+    @Comment("Message displayed when someone tried to delete warp without permission (not owner).")
+    default String getNotWarpOwner()
+    {
+        return "You're not owner of this warp.";
     }
 
     @Comment("Message displayed when warp has been deleted.")
@@ -149,4 +167,18 @@ public interface WarpMessages extends Config
     {
         return "Autosave warps complete!";
     }
+
+    @Comment("Message displayed when player has been added to applicable players of warp")
+    default String getApplicablePlayerAdded()
+    {
+        return "New player has been added to applicable players.";
+    }
+
+    @Comment("Message displayed when player has been removed from applicable players of warp")
+    default String getApplicablePlayerRemoved()
+    {
+        return "Player has been removed from applicable players.";
+    }
+
+
 }

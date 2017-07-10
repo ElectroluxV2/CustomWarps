@@ -1,4 +1,4 @@
-package pl.insertt.customwarps.command.framework;
+package pl.insertt.customwarps.system.command;
 
 public class ArgumentParseException extends Throwable
 {

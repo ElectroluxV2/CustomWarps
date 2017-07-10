@@ -4,18 +4,12 @@ import org.bukkit.Location;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class FormatUtils
 {
-    private FormatUtils()
-    {
-
-    }
-
     public static String formatLocation(Location location)
     {
         final StringBuilder buf = new StringBuilder();
@@ -45,11 +39,13 @@ public class FormatUtils
         return dateFormat.format(calendar.getTime());
     }
 
-    public static Instant fromLong(long time)
+    public static Date fromLong(long time)
     {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(time);
 
-        return calendar.toInstant();
+        return Date.from(calendar.toInstant());
     }
+
+    private FormatUtils() { }
 }

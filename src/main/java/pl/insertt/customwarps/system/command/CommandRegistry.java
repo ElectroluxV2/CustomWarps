@@ -1,12 +1,15 @@
-package pl.insertt.customwarps.command.framework;
+package pl.insertt.customwarps.system.command;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import pl.insertt.customwarps.CustomWarpsPlugin;
+import pl.insertt.customwarps.system.command.api.Command;
+import pl.insertt.customwarps.system.command.api.CommandInfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,6 +33,8 @@ public class CommandRegistry
                 field.setAccessible(true);
                 this.commandMap = ((CommandMap)field.get(Bukkit.getServer()));
                 field.setAccessible(false);
+
+
             }
             catch (IllegalAccessException | NoSuchFieldException e)
             {
@@ -92,7 +97,14 @@ public class CommandRegistry
 
                             try
                             {
-                                command.execute(sender, args);
+                                if(sender instanceof Player)
+                                {
+                                    command.execute(WarpPlayerManager.getByUUID(((Player) sender).getUniqueId()), args);
+                                }
+                                else if(sender instanceof ConsoleCommandSender)
+                                {
+                                    command.execute(plugin.getConsole(), args);
+                                }
                             }
                             catch(ArgumentParseException | SomethingWentWrong | Exception ex)
                             {
@@ -108,6 +120,7 @@ public class CommandRegistry
                                         sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getUnknownError());
                                         ex.printStackTrace();
                                     }
+                                    return true;
                                 }
 
                                 if(sender instanceof Player)
@@ -118,6 +131,7 @@ public class CommandRegistry
                                 {
                                     sender.sendMessage(plugin.getMessages().getErrorColor() + plugin.getMessages().getSomethingWrong() + ex.getMessage());
                                 }
+                                return true;
                             }
                             return true;
                         }

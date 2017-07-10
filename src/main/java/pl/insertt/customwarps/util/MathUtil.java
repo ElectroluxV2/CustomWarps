@@ -5,11 +5,6 @@ import java.math.RoundingMode;
 
 public class MathUtil
 {
-    private MathUtil()
-    {
-
-    }
-
     public static int roundToMultiply(int num, int multiple)
     {
         return multiple * (int) Math.ceil((float) num / (float) multiple);
@@ -24,4 +19,6 @@ public class MathUtil
 
         return bd.doubleValue();
     }
+
+    private MathUtil() { }
 }

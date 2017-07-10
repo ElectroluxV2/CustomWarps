@@ -56,6 +56,19 @@ public class GuiWindow
         }
     }
 
+    public void setToNextFree(GuiItem item, int start)
+    {
+        for(int i = start; i < inv.getSize(); i++)
+        {
+            if(inv.getItem(i) == null)
+            {
+                this.items.put(i, item);
+                this.inv.setItem(i, item.getBukkitItem());
+                break;
+            }
+        }
+    }
+
     public GuiItem getItem(int slot)
     {
         return this.items.get(slot);
@@ -124,6 +137,19 @@ public class GuiWindow
             if(inv.getItem(i) == null)
             {
                 inv.setItem(i, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+            }
+        }
+    }
+
+    public void redefine(GuiItem item)
+    {
+        for(Map.Entry<Integer, GuiItem> entry : items.entrySet())
+        {
+            if(entry.getValue().equals(item))
+            {
+                items.remove(entry.getKey());
+                items.put(entry.getKey(), entry.getValue());
+                break;
             }
         }
     }

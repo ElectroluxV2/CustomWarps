@@ -1,38 +1,40 @@
-package pl.insertt.customwarps.system.builder;
+package pl.insertt.customwarps.system.gui;
 
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ItemBuilder
+public class GuiItemBuilder
 {
     private final ItemStack itemStack;
 
     private ItemMeta itemMeta;
 
-    public ItemBuilder(Material material)
+    public GuiItemBuilder(Material material)
     {
         this.itemStack = new ItemStack(material);
         this.itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder(Material material, int stack)
+    public GuiItemBuilder(Material material, int stack)
     {
         this.itemStack = new ItemStack(material, stack);
         this.itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder(Material material, int stack, int data)
+    public GuiItemBuilder(Material material, int stack, int data)
     {
         this.itemStack = new ItemStack(material, stack, (short) data);
         this.itemMeta = itemStack.getItemMeta();
     }
 
-    public ItemBuilder(ItemStack itemStack)
+    public GuiItemBuilder(ItemStack itemStack)
     {
         this.itemStack = itemStack;
         this.itemMeta = itemStack.getItemMeta();
@@ -43,35 +45,31 @@ public class ItemBuilder
         this.itemStack.setItemMeta(itemMeta);
     }
 
-    public ItemBuilder setName(String name)
+    public GuiItemBuilder setName(String name)
     {
         itemMeta.setDisplayName(StringUtils.replace(name, "&", "§"));
-
         refreshMeta();
-
         return this;
     }
 
-    public ItemBuilder setLore(String... lore)
+    public GuiItemBuilder setLore(String... lore)
     {
+        List<String> formatted = new ArrayList<>();
+
         for (String str : lore)
         {
-            StringUtils.replace(str, "&", "§");
+            formatted.add(ChatColor.GRAY + StringUtils.replace(str, "&", "§"));
         }
 
-        itemMeta.setLore(Arrays.asList(lore));
-
+        itemMeta.setLore(formatted);
         refreshMeta();
-
         return this;
     }
 
-    public ItemBuilder setEnchant(Enchantment enchant, int level)
+    public GuiItemBuilder setEnchant(Enchantment enchant, int level)
     {
         itemMeta.addEnchant(enchant, level, true);
-
         refreshMeta();
-
         return this;
     }
 

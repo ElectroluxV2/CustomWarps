@@ -1,11 +1,15 @@
 package pl.insertt.customwarps.command;
 
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import pl.insertt.customwarps.CustomWarpsPlugin;
-import pl.insertt.customwarps.command.framework.*;
+import pl.insertt.customwarps.system.command.ArgumentParseException;
+import pl.insertt.customwarps.system.command.Arguments;
+import pl.insertt.customwarps.system.command.SomethingWentWrong;
+import pl.insertt.customwarps.system.command.api.Command;
+import pl.insertt.customwarps.system.command.api.CommandInfo;
+import pl.insertt.customwarps.system.command.api.WarpCommandSender;
+import pl.insertt.customwarps.system.command.api.WarpPlayer;
 import pl.insertt.customwarps.system.warp.api.CustomWarp;
+import pl.insertt.customwarps.util.StringUtils;
 
 public class DeleteWarpCommand implements Command
 {
@@ -16,55 +20,46 @@ public class DeleteWarpCommand implements Command
         this.plugin = plugin;
     }
 
-    @CommandInfo(name = "deletewarp", description = "Delete warp command.", usage = "/deletewarp <name>", permission = "customwarps.command.deletewarp", minArgs = 1, maxArgs = 1)
-    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
+    @CommandInfo(name = "deletewarp",
+                 description = "Delete warp command.",
+                 usage = "/deletewarp <name>",
+                 aliases = {"delwarp", "removewarp", "remwarp"},
+                 permission = "customwarps.command.deletewarp",
+                 minArgs = 1,
+                 maxArgs = 16)
+    public void execute(WarpCommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
     {
         if(sender.hasPermission("customwarps.command.deletewarp.admin") || sender.isOp())
         {
-            String name = args.getString(0);
+            String name = StringUtils.buildName(args.getFrom(1, 16));
             CustomWarp warp = plugin.getRegistry().getWarp(name);
-            boolean result = plugin.getRegistry().unregister(warp);
-            if(sender instanceof Player)
-            {
-                if(result)
-                {
-                    ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getSuccessColor() + plugin.getMessages().getWarpDeleted()));
-                    return;
-                }
-                else
-                {
-                    throw new SomethingWentWrong(plugin.getMessages().getWarpDoesntExists());
-                }
-            }
-            if(result)
-            {
-                sender.sendMessage(plugin.getMessages().getSuccessColor() + plugin.getMessages().getWarpDeleted());
-            }
-            else
+
+            if(warp == null)
             {
                 throw new SomethingWentWrong(plugin.getMessages().getWarpDoesntExists());
             }
+
+            plugin.getRegistry().unregister(warp);
+            sender.sendMessage(plugin.getMessages().getSuccessColor() + plugin.getMessages().getWarpDeleted());
             return;
         }
 
-        Player player = (Player) sender;
-
+        final WarpPlayer player = (WarpPlayer) sender;
         String name = args.getString(0);
-        CustomWarp warp = plugin.getRegistry().getWarp(name);
-        if(!warp.getOwner().equals(player.getUniqueId()))
-        {
-            throw new SomethingWentWrong("You're not owner of this warp!");
-        }
+        final CustomWarp warp = plugin.getRegistry().getWarp(name);
 
-        boolean result = plugin.getRegistry().unregister(warp);
-        if(result)
-        {
-            ((Player)sender).spigot().sendMessage(plugin.getConfiguration().getMessageFormat(), new TextComponent(plugin.getMessages().getSuccessColor() + plugin.getMessages().getWarpDeleted()));
-        }
-        else
+        if(warp == null)
         {
             throw new SomethingWentWrong(plugin.getMessages().getWarpDoesntExists());
         }
+
+        if(!warp.getOwner().equals(player.getUniqueId()))
+        {
+            throw new SomethingWentWrong(plugin.getMessages().getNotWarpOwner());
+        }
+
+        plugin.getRegistry().unregister(warp);
+        player.sendDependMessage(plugin.getMessages().getSuccessColor() + plugin.getMessages().getWarpDeleted());
     }
 }
 

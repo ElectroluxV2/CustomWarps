@@ -9,13 +9,10 @@ public class RandomUtils
 {
     private static Random random = new Random();
 
-    private RandomUtils()
-    {
-
-    }
-
     public static Material getRandomMaterial(Material[] limits)
     {
         return DioriteRandomUtils.getRandom(random, limits);
     }
+
+    private RandomUtils() { }
 }

@@ -11,7 +11,7 @@ import org.diorite.config.annotations.Header;
 
 public interface WarpConfig extends Config
 {
-    @Comment({"Defines where messages will appear. Available modes: CHAT, ACTION_BAR", "Not every message will be appeared on action bar if selected."})
+    @Comment({"Defines where messages will appear. Available modes: CHAT, ACTION_BAR", "Not every message will be appeared on action bar if selected.", "And remember, action bar doesn't have many features like hovers or multi-line messages and they will not work.", "Recommended setting: chat"})
     default ChatMessageType getMessageFormat()
     {
         return ChatMessageType.CHAT;
@@ -39,6 +39,12 @@ public interface WarpConfig extends Config
     default int getMaxWarpsPerPlayer()
     {
         return 1;
+    }
+
+    @Comment({"Defines how much applicable players can be add to warp.", "At the moment, max applicable players > 45 is not supported, sorry."})
+    default int getMaxApplicablePlayers()
+    {
+        return 5;
     }
 
     void setMessageFormat(ChatMessageType type);

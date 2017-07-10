@@ -10,11 +10,6 @@ import java.util.UUID;
 
 public class PlayerUtils
 {
-    private PlayerUtils()
-    {
-
-    }
-
     public static void broadcast(TextComponent component)
     {
         for(Player player : Bukkit.getOnlinePlayers())
@@ -37,4 +32,6 @@ public class PlayerUtils
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         return player.getName();
     }
+
+    private PlayerUtils() { }
 }

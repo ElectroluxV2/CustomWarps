@@ -6,11 +6,6 @@ import java.util.List;
 
 public class StringUtils
 {
-    private StringUtils()
-    {
-
-    }
-
     public static String buildName(List<String> arguments)
     {
         final StringBuilder buf = new StringBuilder();
@@ -27,4 +22,5 @@ public class StringUtils
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
+    private StringUtils() { }
 }

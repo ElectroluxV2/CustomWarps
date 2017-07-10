@@ -3,26 +3,26 @@ package pl.insertt.customwarps.system.gui;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 
 public class GuiListener implements Listener
 {
     @EventHandler
     public void onClick(InventoryClickEvent e)
     {
-        GuiWindow window = GuiWindow.getWindow(e.getInventory().getTitle());
-        if(window != null)
+        if(e.getClickedInventory() != null && e.getClickedInventory().getType().equals(InventoryType.CHEST))
         {
-            GuiItem item = window.getItem(e.getSlot());
-            if(item != null)
+            GuiWindow window = GuiWindow.getWindow(e.getInventory().getTitle());
+            if(window != null)
             {
-                item.invClick(e);
+                GuiItem item = window.getItem(e.getSlot());
+                if(item != null)
+                {
+                    item.invClick(e);
+                }
+                e.setResult(Event.Result.DENY);
+                e.setCancelled(true);
             }
-            e.setResult(Event.Result.DENY);
-            e.setCancelled(true);
         }
     }
 
@@ -51,8 +51,12 @@ public class GuiListener implements Listener
     {
         if(GuiWindow.getWindow(e.getInventory().getTitle()) != null)
         {
-            e.setResult(Event.Result.DENY);
-            e.setCancelled(true);
+            if(e.getInventory().getType().equals(InventoryType.CHEST))
+            {
+                System.out.println("inventoryinteract");
+                e.setResult(Event.Result.DENY);
+                e.setCancelled(true);
+            }
         }
     }
 }

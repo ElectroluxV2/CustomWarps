@@ -13,6 +13,13 @@ public class GuiItem
     public GuiItem(ItemStack item, Consumer<InventoryClickEvent> consumer)
     {
         this.item = item;
+
+        if(consumer == null)
+        {
+            consumer = a -> {};
+            return;
+        }
+
         this.consumer = consumer;
     }
 

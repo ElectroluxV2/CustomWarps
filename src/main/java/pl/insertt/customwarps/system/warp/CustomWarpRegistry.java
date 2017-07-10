@@ -4,7 +4,9 @@ import pl.insertt.customwarps.CustomWarpsPlugin;
 import pl.insertt.customwarps.system.warp.api.CustomWarp;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CustomWarpRegistry
@@ -17,25 +19,14 @@ public class CustomWarpRegistry
         this.plugin = plugin;
     }
 
-    public boolean register(CustomWarp warp)
+    public void register(CustomWarp warp)
     {
-        if(exists(warp.getName()))
-        {
-           return false;
-        }
-
         warps.add(warp);
-        return true;
     }
 
-    public boolean unregister(CustomWarp warp)
+    public void unregister(CustomWarp warp)
     {
-        if(exists(warp.getName()))
-        {
-            warps.remove(warp);
-            return true;
-        }
-        return false;
+        warps.remove(warp);
     }
 
     public boolean exists(String name)

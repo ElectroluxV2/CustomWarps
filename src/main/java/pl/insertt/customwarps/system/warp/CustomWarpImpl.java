@@ -12,8 +12,8 @@ import org.bukkit.material.TrapDoor;
 import org.diorite.config.annotations.SerializableAs;
 import org.diorite.config.serialization.DeserializationData;
 import org.diorite.config.serialization.SerializationData;
-import pl.insertt.customwarps.util.FormatUtils;
 import pl.insertt.customwarps.system.warp.api.CustomWarp;
+import pl.insertt.customwarps.util.FormatUtils;
 import pl.insertt.customwarps.util.RandomUtils;
 
 import javax.annotation.Nonnull;
@@ -24,7 +24,7 @@ import java.util.*;
 /*
     Simple custom warp service, responsible for holding warp data.
  */
-public class CustomWarpService implements CustomWarp
+public class CustomWarpImpl implements CustomWarp
 {
     private final UUID warpOwner;
 
@@ -55,7 +55,7 @@ public class CustomWarpService implements CustomWarp
      * @param location
      *        of the warp.
      */
-    CustomWarpService(final UUID owner, final String name, final Location location, final Material icon)
+    CustomWarpImpl(final UUID owner, final String name, final Location location, final Material icon)
     {
         this.warpOwner = owner;
         this.warpName = name;
@@ -74,12 +74,12 @@ public class CustomWarpService implements CustomWarp
         this.icon = icon;
     }
 
-    protected CustomWarpService(DeserializationData data)
+    protected CustomWarpImpl(DeserializationData data)
     {
         this.warpOwner = data.getOrThrow("owner", UUID.class);
         this.warpName = data.getOrThrow("name", String.class);
 
-        this.creationDate = Date.from(FormatUtils.fromLong(data.getOrThrow("creationDate", Long.class)));
+        this.creationDate = FormatUtils.fromLong(data.getOrThrow("creationDate", Long.class));
 
         this.world = data.getOrThrow("world", String.class);
         this.coordX = data.getOrThrow("coordX", double.class);
@@ -88,26 +88,23 @@ public class CustomWarpService implements CustomWarp
         this.pitch = data.getOrThrow("pitch", float.class);
         this.yaw = data.getOrThrow("yaw", float.class);
 
+        this.applicablePlayers = new HashSet<>();
         data.getAsCollection("applicablePlayers", UUID.class, this.applicablePlayers);
 
         this.modified = data.getOrThrow("modified", boolean.class);
-        this.modificationDate = Date.from(FormatUtils.fromLong(data.getOrThrow("modificationDate", Long.class)));
+        this.modificationDate = FormatUtils.fromLong(data.getOrThrow("modificationDate", Long.class));
 
         this.icon = data.getOrThrow("icon", Material.class);
 
-        if(this.applicablePlayers == null)
-        {
-            this.applicablePlayers = new HashSet<>();
-        }
     }
 
-    public static CustomWarpService deserialize(DeserializationData data)
+    public static CustomWarpImpl deserialize(DeserializationData data)
     {
-        return new CustomWarpService(data);
+        return new CustomWarpImpl(data);
     }
 
     @OverridingMethodsMustInvokeSuper
-    public void serialize(SerializationData data)
+    public void serialize(@Nonnull SerializationData data)
     {
         data.add("owner", this.warpOwner);
         data.add("name", this.warpName);
@@ -130,6 +127,7 @@ public class CustomWarpService implements CustomWarp
     }
 
     @Override
+    @Nonnull
     public UUID getOwner()
     {
         return warpOwner;
@@ -143,6 +141,7 @@ public class CustomWarpService implements CustomWarp
     }
 
     @Override
+    @Nonnull
     public Location getLocation()
     {
         return new Location(Bukkit.getWorld(world), coordX, coordY, coordZ, yaw, pitch);
@@ -157,21 +156,20 @@ public class CustomWarpService implements CustomWarp
         this.coordZ = location.getZ();
         this.yaw = location.getYaw();
         this.pitch = location.getPitch();
-        modified = true;
-        modificationDate = new Date(System.currentTimeMillis());
+        this.updateModificationDate();
     }
 
     @Override
     public void setName(String name)
     {
         this.warpName = name;
-        modified = true;
-        modificationDate = new Date(System.currentTimeMillis());
+        this.updateModificationDate();
     }
 
     @Override
     public void removeApplicablePlayer(UUID player)
     {
+        this.updateModificationDate();
         applicablePlayers.remove(player);
     }
 
@@ -179,6 +177,7 @@ public class CustomWarpService implements CustomWarp
     public void addApplicablePlayer(UUID player)
     {
         applicablePlayers.add(player);
+        this.updateModificationDate();
     }
 
     @Override
@@ -257,24 +256,28 @@ public class CustomWarpService implements CustomWarp
     }
 
     @Override
+    @Nonnull
     public Set<UUID> getApplicablePlayers()
     {
         return new HashSet<>(applicablePlayers);
     }
 
     @Override
+    @Nonnull
     public Date getCreationDate()
     {
         return creationDate;
     }
 
     @Override
+    @Nonnull
     public Date getModificationDate()
     {
         return modificationDate;
     }
 
     @Override
+    @Nonnull
     public Material getIcon()
     {
         return icon;
@@ -283,9 +286,8 @@ public class CustomWarpService implements CustomWarp
     @Override
     public void setIcon(Material material)
     {
-        this.icon = icon;
-        modified = true;
-        modificationDate = new Date(System.currentTimeMillis());
+        this.icon = material;
+        this.updateModificationDate();
     }
 
     @Override
@@ -299,7 +301,7 @@ public class CustomWarpService implements CustomWarp
         {
             return false;
         }
-        CustomWarpService that = (CustomWarpService) o;
+        CustomWarpImpl that = (CustomWarpImpl) o;
         return Double.compare(that.coordX, coordX) == 0 && Double.compare(that.coordY, coordY) == 0 && Double.compare(that.coordZ, coordZ) == 0 && Float.compare(that.pitch, pitch) == 0 && Float.compare(that.yaw, yaw) == 0 && modified == that.modified && Objects.equals(warpOwner, that.warpOwner) && Objects.equals(warpName, that.warpName) && Objects.equals(creationDate, that.creationDate) && Objects.equals(world, that.world);
     }
 
@@ -326,5 +328,11 @@ public class CustomWarpService implements CustomWarp
                 .append("modified", modified)
                 .append("modificationDate", modificationDate)
                 .toString();
+    }
+
+    private void updateModificationDate()
+    {
+        modified = true;
+        modificationDate = new Date(System.currentTimeMillis());
     }
 }

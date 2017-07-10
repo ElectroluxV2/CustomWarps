@@ -5,10 +5,14 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import pl.insertt.customwarps.CustomWarpsPlugin;
-import pl.insertt.customwarps.command.framework.*;
+import pl.insertt.customwarps.system.command.ArgumentParseException;
+import pl.insertt.customwarps.system.command.Arguments;
+import pl.insertt.customwarps.system.command.SomethingWentWrong;
+import pl.insertt.customwarps.system.command.api.Command;
+import pl.insertt.customwarps.system.command.api.CommandInfo;
+import pl.insertt.customwarps.system.command.api.WarpCommandSender;
+import pl.insertt.customwarps.system.command.api.WarpPlayer;
 import pl.insertt.customwarps.system.warp.api.CustomWarp;
 import pl.insertt.customwarps.util.FormatUtils;
 
@@ -21,21 +25,23 @@ public class WarpsCommand implements Command
         this.plugin = plugin;
     }
 
-    @CommandInfo(name = "warps", description = "Warp list command.", usage = "/warps", aliases = {"warplist", "warpslist"}, permission = "customwarps.command.warps", minArgs = 0, maxArgs = 0, playerOnly = true)
-    public void execute(CommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
+    @CommandInfo(name = "warps",
+                 description = "Warp list command.",
+                 usage = "/warps",
+                 aliases = {"warplist", "warpslist"},
+                 permission = "customwarps.command.warps",
+                 minArgs = 0,
+                 maxArgs = 0,
+                 playerOnly = true)
+    public void execute(WarpCommandSender sender, Arguments args) throws ArgumentParseException, SomethingWentWrong
     {
-        Player player = (Player) sender;
-        //String type = plugin.getConfiguration().getWarpListType();
-        //int menus = (int) Math.ceil(plugin.getRegistry().getWarpCount() / 53);
-
-        /*if(type.equalsIgnoreCase("gui")) //TODO: Warps in GUI.
+        WarpPlayer player = (WarpPlayer) sender;
+        if(plugin.getRegistry().getWarpCount() == 0)
         {
-            GuiWindow window = new GuiWindow(ChatColor.RED + "Warps", 6);
-            window.setCloseEvent(event -> window.unregister());
-
+            player.sendMessage(plugin.getMessages().getMainColor() + plugin.getMessages().getNoAvailableWarps());
+            return;
         }
-        else
-        {*/
+
         TextComponent start = new TextComponent(plugin.getMessages().getMainColor() + plugin.getMessages().getAvailableWarps());
 
         for(CustomWarp warp : plugin.getRegistry().getAllWarps())
@@ -49,7 +55,7 @@ public class WarpsCommand implements Command
                                     .create()));
             start.addExtra(comp);
         }
-        player.spigot().sendMessage(start);
+        player.sendMessage(start);
     }
 
 }
